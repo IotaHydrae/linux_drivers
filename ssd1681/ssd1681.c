@@ -67,6 +67,7 @@ enum ssd1681_command {
     DUMMY = 0x00,
 };
 
+#define SPI_BUF_LEN     256
 #define PANEL_BUSY_TIMEOUT_MS   200
 
 struct ssd1681_dev {
@@ -91,6 +92,8 @@ struct ssd1681_dev {
         u32                     xres;
         u32                     yres;
         u32                     refr_mode;
+        u32                     wait;
+        u32                     busy;
 };
 
 static const s16 default_init_sequence[] = {
@@ -108,7 +111,7 @@ static const s16 default_init_sequence[] = {
     
     2, 0x18, 0x80,
 
-    -4, 0x4e, 0x00, 0x4f, 0xc7, 0x00,
+    -5, 0x4e, 0x00, 0x4f, 0xc7, 0x00,
 
     /* set default refr mode here */
 };
@@ -144,8 +147,38 @@ static void ssd1681_set_addr_win(struct ssd1681_dev *sd, int xs, int ys, int xe,
 	write_reg(sd, MIPI_DCS_WRITE_MEMORY_START);
 }
 
+static int ssd1681_init_display(struct ssd1681_dev *sd)
+{
+        int step;
+        const s16 *index;
+        
+        if (!sd->init_sequence)
+                return -EINVAL;
+
+        index = sd->init_sequence;
+        for (;;) {
+                if (!index)
+                        break;
+                /* need for waiting? */
+                step = (unsigned int)*index;
+                memcpy(sd->buf, (index + 1), step);
+                // spi_write(sd->spi, sd->buf, step);
+                if (*index > 0) {
+                        pr_debug("waiting for busy ...\n");
+                } else {
+                        pr_debug("relax, here nothing to do ...\n");
+                }
+                
+                index += (step + 1);
+        }
+
+        return 0;
+}
+
 static int ssd1681_hw_init(struct ssd1681_dev *sd)
 {
+        pr_debug("%s, initializing hardware ...\n", __func__);
+        // ssd1681_init_display(sd);
         ssd1681_set_addr_win(sd, 0, 0, 200, 200);
         return 0;
 }
@@ -183,8 +216,7 @@ static int ssd1681_request_one_gpio(struct ssd1681_dev *sd,
                 }
                 if (gpiop)
                         *gpiop = gpio_to_desc(gpio);
-                dev_dbg(dev,
-                        "%s : '%s' = GPIO%d\n",
+                pr_debug("%s : '%s' = GPIO%d\n",
                         __func__, name, gpio);
         }
 
@@ -194,6 +226,7 @@ static int ssd1681_request_one_gpio(struct ssd1681_dev *sd,
 static int ssd1681_of_config(struct ssd1681_dev *sd)
 {
         int rc;
+        pr_debug("%s, configure from dt\n", __func__);
 
         rc = ssd1681_request_one_gpio(sd, "reset-gpios", 0, &sd->gpio.reset);
         if (rc)
@@ -219,11 +252,24 @@ static int ssd1681_probe(struct spi_device *spi)
         /* memory resource alloc */
         sd = kmalloc(sizeof(struct ssd1681_dev), GFP_KERNEL);
         if (!sd) {
-                dev_err(dev, "failed to alloc memory!\n");
+                dev_err(dev, "failed to alloc sd memory!\n");
+                return -ENOMEM;
+        }
+
+        sd->buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+        if (!sd->buf) {
+                dev_err(dev, "failed to alloc buf memory!\n");
+                return -ENOMEM;
+        }
+
+        sd->txbuf.buf = kmalloc(SPI_BUF_LEN, GFP_KERNEL);
+        if (!sd->txbuf.buf) {
+                dev_err(dev, "failed to alloc txbuf!\n");
                 return -ENOMEM;
         }
 
         sd->spi = spi;
+        sd->dev = dev;
         sd->init_sequence = default_init_sequence;
         spi_set_drvdata(spi, sd);
 
@@ -237,7 +283,12 @@ static int ssd1681_probe(struct spi_device *spi)
 
 static int ssd1681_remove(struct spi_device *spi)
 {
+        struct ssd1681_dev *sd = spi_get_drvdata(spi);
 
+        kfree(sd->buf);
+        kfree(sd->txbuf.buf);
+
+        kfree(sd);
         return 0;
 }
 
