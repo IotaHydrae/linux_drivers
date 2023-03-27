@@ -9,7 +9,7 @@ static devfs_handle_t devfs_handle;
 
 static file_operations devfs_test_fops = {
 	.owner = THIS_MODULE,
-}
+};
 
 static int __init demo_init(void)
 {
