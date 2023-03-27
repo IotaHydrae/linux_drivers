@@ -1,2 +1,3 @@
 # linux_drivers
-device drivers developed for Linux
+
+The driver developed under Linux, including Kernel API, etc.
