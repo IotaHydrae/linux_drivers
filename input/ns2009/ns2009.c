@@ -66,7 +66,7 @@ module_exit(ns2009_exit);
 */
 module_i2c_driver(ns2009_driver);
 
-MODULE_AUTHOR("Zheng Hua <writeforever@foxmail.com>");
+MODULE_AUTHOR("IotaHydrae <writeforever@foxmail.com>");
 MODULE_ALIAS("ns2009-i2c");
-MODULE_DESCRIPTION("NS2009 Touchscreen Driver");
+MODULE_DESCRIPTION("Device driver or NS2009 Touchscreen Driver IC");
 MODULE_LICENSE("GPL");
