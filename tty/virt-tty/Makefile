@@ -1,16 +1,14 @@
 
 # local kernel build dir
-#KERN_DIR:=/lib/modules/$(shell uname -r)/build
+KERN_DIR:=/lib/modules/$(shell uname -r)/build
 
 # users kernel dir
-KERN_DIR:=/home/developer/sources/T113-PRO-Longan-SDK/T113-Pro_Longan-SDK/out/kernel/build
 #ERN_DIR:=/home/developer/sources/T113-PRO-Longan-SDK/T113-Pro_Longan-SDK/kernel/linux-5.4
 
-#MODULE_NAME:=virt-tty
-MODULE_NAME:=ssd1681
+MODULE_NAME:=virt-tty
 
 all:
-	make -C $(KERN_DIR) ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  M=`pwd` modules 
+	make -C $(KERN_DIR) M=`pwd` modules 
 
 clean:
 	make -C $(KERN_DIR) M=`pwd` modules clean
