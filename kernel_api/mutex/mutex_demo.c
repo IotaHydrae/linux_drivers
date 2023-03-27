@@ -15,7 +15,7 @@ static struct task_struct *my_kthread_2;
 
 static int kthread_worker_1(void *data)
 {
-    for (;;) {
+    for (;!kthread_should_stop();) {
         mutex_lock(race_lock_2);
         loop_count++;
         printk("%s, loop count is : %lu\n", __func__, loop_count);
@@ -28,7 +28,7 @@ static int kthread_worker_1(void *data)
 
 static int kthread_worker_2(void *data)
 {
-    for (;;) {
+    for (;!kthread_should_stop();) {
         mutex_lock(race_lock_2);
         loop_count++;
         printk("%s, loop count is : %lu\n", __func__, loop_count);
@@ -47,11 +47,11 @@ static int __init mutex_demo_init(void)
         
     mutex_init(race_lock_2);
     
-    my_kthread_1 = kthread_create(kthread_worker_1, NULL, "my kthread");
-    my_kthread_2 = kthread_create(kthread_worker_2, NULL, "my kthread");
+    my_kthread_1 = kthread_run(kthread_worker_1, NULL, "my kthread");
+    my_kthread_2 = kthread_run(kthread_worker_2, NULL, "my kthread");
 
-    wake_up_process(my_kthread_1);
-    wake_up_process(my_kthread_2);
+    // wake_up_process(my_kthread_1);
+    // wake_up_process(my_kthread_2);
 
     return 0;
 }
@@ -60,6 +60,10 @@ static void __exit mutex_demo_exit(void)
 {
     if (race_lock_2)
         kfree(race_lock_2);
+
+    /* `kthread_stop` is blocking funtion */
+    kthread_stop(my_kthread_1);
+    kthread_stop(my_kthread_2);
 }
 
 module_init(mutex_demo_init);
