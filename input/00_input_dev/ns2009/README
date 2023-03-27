@@ -1,0 +1,20 @@
+NS2009 I2C driver
+=================
+
+The NS2009 is a 4-wire resistive touch screen controller with I2C Interface, includes 12-bit resolution A / D converter.
+The NS2009 through the implementation of the two A / D conversion has been identified by the location of the screen, in
+addition to measurable increase in pressure on the touch screen. 2.7V typical work in the state, the closure of
+the reference voltage, power consumption can be less than 0.75mW.
+
+Features
+- Operating voltage range of 2.0V ~ 5.5V
+- Touch-pressure measurement
+- 2-wire I2C communication interface
+- With automatic power down feature
+- MSOP10 and QFN(3×3)-16L package
+- 40 ~ 85 °C Operating Temperature Range
+
+Applications
+- Mobile phone (cell phone, etc.)
+- Touch screen displays, personal digital assistant (PDA)
+- Portable equipment, POS terminal machine equipment, etc.

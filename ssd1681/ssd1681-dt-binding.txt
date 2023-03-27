@@ -1,0 +1,17 @@
+// Copyright (c) 2023 IotaHydrae(writeforever@foxmail.com)
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
+ssd1681: ss1681 {
+    compatile = "embeddedboys,ssd1681";
+    reg = <0>;
+
+    xres = 200;
+    yres = 200;
+
+    spi-max-frequency = <10000000>;
+    reset-gpios = <&pio 3 5>
+    dc-gpios = <&pio 3 4>;
+    busy-gpios = <&pio 3 3>;
+};
