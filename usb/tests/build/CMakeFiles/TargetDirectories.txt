@@ -1,0 +1,3 @@
+/home/developer/sources/linux_drivers/usb/tests/build/CMakeFiles/usbmouse.dir
+/home/developer/sources/linux_drivers/usb/tests/build/CMakeFiles/edit_cache.dir
+/home/developer/sources/linux_drivers/usb/tests/build/CMakeFiles/rebuild_cache.dir
