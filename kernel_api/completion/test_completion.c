@@ -15,7 +15,7 @@ static int my_thread(void *data)
     for (; !kthread_should_stop();) {
         printk("%s, waiting for completion ...\n", __func__);
         wait_for_completion_interruptible(&comp);
-        
+
         printk("%s, somebody just wake me up ...\n", __func__);
         /* Check event flag */
         if (event_flag == 1) {
@@ -24,7 +24,7 @@ static int my_thread(void *data)
         if (event_flag == 2) {
             printk("%s, event from init function\n", __func__);
         }
-        
+
         reinit_completion(&comp);
     }
     return 0;
@@ -38,12 +38,12 @@ static int my_thread2(void *data)
         if (loop_count == 5) {
             event_flag = 1;
             loop_count = 0;
-            
+
             complete(&comp);
         }
         printk("%s, i'm working ...\n", __func__);
         loop_count++;
-        
+
         msleep(500);
     }
     return 0;
@@ -54,7 +54,7 @@ static int __init demo_init(void)
     init_completion(&comp);
     my_kthread_1 = kthread_run(my_thread, NULL, "my thread");
     my_kthread_2 = kthread_run(my_thread2, NULL, "my thread2");
-    
+
     event_flag = 2;
     complete(&comp);
     return 0;
