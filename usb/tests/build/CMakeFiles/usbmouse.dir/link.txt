@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/usbmouse.dir/usbmouse.c.o -o usbmouse  -lusb-1.0 
