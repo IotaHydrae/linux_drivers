@@ -109,7 +109,12 @@ static int usb_mouse_raw_probe(struct usb_interface *intf,
      * Here to do the real register operations, you need to do the
      * works list blow :
      *
-     * 1.
+     * 1. alloc an input device
+     * 2. set up the input device
+     * 3. store the private data
+     * 4. alloc a usb urb
+     * 5. fill the urb
+     * 6. register the input device
      */
     printk("a usb mouse has plugged in ..., %s\n", (char *)id->driver_info);
     
